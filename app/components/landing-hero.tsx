@@ -1,5 +1,11 @@
 import { Link } from "react-router";
-import { BookOpen, GraduationCap, Users, ArrowRight } from "lucide-react";
+import {
+  BookOpen,
+  GraduationCap,
+  Users,
+  ArrowRight,
+  type LucideIcon,
+} from "lucide-react";
 import { Button } from "~/components/ui/button";
 
 export function LandingHero() {
@@ -26,6 +32,24 @@ export function LandingHero() {
   );
 }
 
+type LandingStatProps = {
+  icon: LucideIcon;
+  value: string | number;
+  label: string;
+};
+
+function LandingStat({ icon: Icon, value, label }: LandingStatProps) {
+  return (
+    <div>
+      <div className="mb-3 flex size-12 items-center justify-center rounded-lg bg-primary/10">
+        <Icon className="size-6 text-primary" />
+      </div>
+      <p className="text-2xl font-bold">{value}</p>
+      <p className="text-sm text-muted-foreground">{label}</p>
+    </div>
+  );
+}
+
 type LandingStatsProps = {
   totalCourses: number;
   totalCategories: number;
@@ -38,29 +62,21 @@ export function LandingStats({
   return (
     <section className="border-y border-border bg-muted/50 py-16">
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 px-6 sm:grid-cols-3">
-        <div>
-          <div className="mb-3 flex size-12 items-center justify-center rounded-lg bg-primary/10">
-            <BookOpen className="size-6 text-primary" />
-          </div>
-          <p className="text-2xl font-bold">{totalCourses}</p>
-          <p className="text-sm text-muted-foreground">Available Courses</p>
-        </div>
-        <div>
-          <div className="mb-3 flex size-12 items-center justify-center rounded-lg bg-primary/10">
-            <GraduationCap className="size-6 text-primary" />
-          </div>
-          <p className="text-2xl font-bold">{totalCategories}</p>
-          <p className="text-sm text-muted-foreground">Categories</p>
-        </div>
-        <div>
-          <div className="mb-3 flex size-12 items-center justify-center rounded-lg bg-primary/10">
-            <Users className="size-6 text-primary" />
-          </div>
-          <p className="text-2xl font-bold">Self-paced</p>
-          <p className="text-sm text-muted-foreground">
-            Learn on your schedule
-          </p>
-        </div>
+        <LandingStat
+          icon={BookOpen}
+          value={totalCourses}
+          label="Available Courses"
+        />
+        <LandingStat
+          icon={GraduationCap}
+          value={totalCategories}
+          label="Categories"
+        />
+        <LandingStat
+          icon={Users}
+          value="Self-paced"
+          label="Learn on your schedule"
+        />
       </div>
     </section>
   );
