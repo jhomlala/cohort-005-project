@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useFetcher } from "react-router";
 import { toast } from "sonner";
 import { MessageSquare, Pencil, Reply, Trash2 } from "lucide-react";
@@ -356,6 +356,7 @@ export function CommentThread({
   canModerate,
   canPost,
   instructorName,
+  notes,
 }: {
   comments: RenderedComment[];
   currentUserId: number | null;
@@ -363,10 +364,14 @@ export function CommentThread({
   canModerate: boolean;
   canPost: boolean;
   instructorName: string;
+  /** Shown above the discussion, inside the same card. */
+  notes?: ReactNode;
 }) {
   return (
     <Card className="mb-8">
       <CardContent className="p-6">
+        {notes && <div className="mb-8 border-b pb-8">{notes}</div>}
+
         <div className="mb-4 flex items-center gap-2">
           <MessageSquare className="size-5 text-primary" />
           <h2 className="text-xl font-semibold">Questions &amp; Discussion</h2>
