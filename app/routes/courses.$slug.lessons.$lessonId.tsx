@@ -16,7 +16,7 @@ import { Button } from "~/components/ui/button";
 import { AlertTriangle } from "lucide-react";
 import { data, isRouteErrorResponse } from "react-router";
 import { z } from "zod";
-import { parseFormData } from "~/lib/validation";
+import { parseFormData, parseParams } from "~/lib/validation";
 import type { Route } from "./+types/courses.$slug.lessons.$lessonId";
 import {
   loadLessonPage,
@@ -57,6 +57,15 @@ const deleteCommentSchema = z.object({
   commentId: z.coerce.number().int(),
 });
 
+// Coerce through the schema, not Number(): Number("") is 0, which is a real id.
+const lessonParamsSchema = z.object({
+  lessonId: z.coerce.number().int().positive(),
+});
+
+const submitQuizSchema = z.object({
+  quizId: z.coerce.number().int().positive(),
+});
+
 export function meta({ loaderData }: Route.MetaArgs) {
   const title = loaderData?.lesson?.title ?? "Lesson";
   const courseTitle = loaderData?.course?.title ?? "Course";
@@ -86,7 +95,7 @@ export async function action({ params, request }: Route.ActionArgs) {
     ref
   );
   const currentUserId = person.id;
-  const lessonId = Number(params.lessonId);
+  const { lessonId } = parseParams(params, lessonParamsSchema);
 
   if (
     intent === "create-comment" ||
@@ -193,15 +202,16 @@ export async function action({ params, request }: Route.ActionArgs) {
   }
 
   if (intent === "mark-complete") {
-    markLessonComplete(currentUserId, lessonId);
+    markLessonComplete(currentUserId, lessonId, new Date());
     return { success: true };
   }
 
   if (intent === "submit-quiz") {
-    const quizId = Number(formData.get("quizId"));
-    if (isNaN(quizId)) {
+    const parsedQuiz = parseFormData(formData, submitQuizSchema);
+    if (!parsedQuiz.success) {
       throw data("Invalid quiz ID", { status: 400 });
     }
+    const quizId = parsedQuiz.data.quizId;
     // Scope the quiz to this lesson so a quiz elsewhere can't be reached by
     // posting its id to this route.
     const quiz = db.select().from(quizzes).where(eq(quizzes.id, quizId)).get();

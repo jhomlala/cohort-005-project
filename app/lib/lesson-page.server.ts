@@ -21,6 +21,7 @@ import {
 import { and, desc, eq, or, sql } from "drizzle-orm";
 import { renderMarkdown } from "~/lib/markdown.server";
 import { data } from "react-router";
+import { z } from "zod";
 import {
   getBestAttempt,
   getQuizByLessonId,
@@ -166,7 +167,11 @@ export function getLessonProgressForCourse(userId: number, courseId: number) {
     .all();
 }
 
-export function markLessonComplete(userId: number, lessonId: number) {
+export function markLessonComplete(
+  userId: number,
+  lessonId: number,
+  now: Date
+) {
   const existing = getLessonProgress(userId, lessonId);
 
   if (existing) {
@@ -174,7 +179,7 @@ export function markLessonComplete(userId: number, lessonId: number) {
       .update(lessonProgress)
       .set({
         status: LessonProgressStatus.Completed,
-        completedAt: new Date().toISOString(),
+        completedAt: now.toISOString(),
       })
       .where(eq(lessonProgress.id, existing.id))
       .returning()
@@ -187,7 +192,7 @@ export function markLessonComplete(userId: number, lessonId: number) {
       userId,
       lessonId,
       status: LessonProgressStatus.Completed,
-      completedAt: new Date().toISOString(),
+      completedAt: now.toISOString(),
     })
     .returning()
     .get();
@@ -307,7 +312,16 @@ export async function loadLessonPage({
 
   const { course, person, enrolled, view, take, manage } = decisions;
   const currentUserId = person?.id ?? null;
-  const lessonId = Number(params.lessonId);
+  // Through the schema: Number("") would be 0, which is a real lesson id.
+  const parsedLessonId = z.coerce
+    .number()
+    .int()
+    .positive()
+    .safeParse(params.lessonId);
+  if (!parsedLessonId.success) {
+    throw data("Lesson not found", { status: 404 });
+  }
+  const lessonId = parsedLessonId.data;
 
   const courseWithDetails = getCourseWithDetails(course.id);
   const lesson = getLessonById(lessonId);
