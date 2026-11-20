@@ -31,6 +31,9 @@ describe("LandingStats", () => {
     expect(html).toContain(">4<");
     expect(html).toContain(">5<");
     expect(html).toContain("Self-paced");
+    expect(html).toContain("Available Courses");
+    expect(html).toContain("Categories");
+    expect(html).toContain("Learn on your schedule");
     expect(html).not.toContain("text-center");
     expect(html).not.toContain("mx-auto mb-3");
   });
