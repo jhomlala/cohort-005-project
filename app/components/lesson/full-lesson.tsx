@@ -164,9 +164,6 @@ export function FullLesson({
             />
           )}
 
-          {/* Note — under the video, so the Student can write while they watch */}
-          {currentUserId && <LessonNote note={note} />}
-
           {/* Lesson Content */}
           {contentHtml && (
             <div
@@ -241,13 +238,14 @@ export function FullLesson({
             </div>
           )}
 
-          {/* Questions & Discussion — confidential to people with access */}
+          {/* Notes sit inside the discussion card, so the two read as one section */}
           <CommentThread
             comments={comments}
             currentUserId={currentUserId}
             canModerate={canModerate}
             canPost
             instructorName={instructorName}
+            notes={currentUserId ? <LessonNote note={note} /> : undefined}
           />
 
           {/* Prev/Next Navigation */}
@@ -327,39 +325,39 @@ function LessonNote({ note }: { note: LessonLoaderData["note"] }) {
   const isSaving = fetcher.state !== "idle";
   const error = fetcher.data?.error;
 
+  // Same heading treatment as the discussion below it, so the card reads as one section.
   return (
-    <Card className="mb-8">
-      <CardContent className="space-y-3 pt-6">
-        <div className="flex items-center gap-2">
-          <NotebookPen className="size-4 text-muted-foreground" />
-          <h2 className="font-semibold">Your notes</h2>
-        </div>
+    <section>
+      <div className="mb-4 flex items-center gap-2">
+        <NotebookPen className="size-5 text-primary" />
+        <h2 className="text-xl font-semibold">Your notes</h2>
+      </div>
 
-        <fetcher.Form method="post" className="space-y-3">
-          <input type="hidden" name="intent" value="save-note" />
-          <Textarea
-            name="body"
-            rows={6}
-            defaultValue={note?.body ?? ""}
-            placeholder="Only you can read this."
-            className="resize-y"
-          />
-          <div className="flex items-center gap-3">
-            <Button type="submit" size="sm" disabled={isSaving}>
-              {isSaving ? "Saving..." : "Save"}
-            </Button>
-            {error && <span className="text-sm text-red-600">{error}</span>}
-            {!error && note && (
-              <span
-                suppressHydrationWarning
-                className="text-xs text-muted-foreground"
-              >
-                Last edited {formatRelativeTime(note.updatedAt)}
-              </span>
-            )}
-          </div>
-        </fetcher.Form>
-      </CardContent>
-    </Card>
+      <fetcher.Form method="post" className="space-y-3">
+        <input type="hidden" name="intent" value="save-note" />
+        <Textarea
+          name="body"
+          rows={6}
+          defaultValue={note?.body ?? ""}
+          placeholder="Only you can read this."
+          aria-label="Your notes"
+          className="resize-y"
+        />
+        <div className="flex items-center gap-3">
+          <Button type="submit" size="sm" disabled={isSaving}>
+            {isSaving ? "Saving..." : "Save"}
+          </Button>
+          {error && <span className="text-sm text-red-600">{error}</span>}
+          {!error && note && (
+            <span
+              suppressHydrationWarning
+              className="text-xs text-muted-foreground"
+            >
+              Last edited {formatRelativeTime(note.updatedAt)}
+            </span>
+          )}
+        </div>
+      </fetcher.Form>
+    </section>
   );
 }
