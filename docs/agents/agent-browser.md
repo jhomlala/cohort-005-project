@@ -18,6 +18,11 @@ Start the app with `npm run dev` first. The examples below use
 `http://localhost:5173`, the dev server's default address — if `npm run dev`
 printed a different one, use that.
 
+Start it once, in the background, with its log in a file:
+`npm run dev > /tmp/dev.log 2>&1 &`. When a page looks wrong, read
+`/tmp/dev.log` before you restart the server. Restart it once per change, not
+once per page.
+
 A screenshot is pixels. To verify a fix you need a yes or a no, so read the
 DOM:
 

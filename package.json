@@ -103,7 +103,10 @@
       "biome format --no-errors-on-unmatched --files-ignore-unknown=true",
       "node scripts/check-file-tokens.js"
     ],
-    "*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}": "oxlint -c .oxlintrc.json --no-error-on-unmatched-pattern",
+    "*.{js,jsx,ts,tsx,mjs,cjs,mts,cts}": [
+      "oxlint -c .oxlintrc.json --no-error-on-unmatched-pattern",
+      "node scripts/check-lint-disables.js"
+    ],
     "*.md": "prettier --check"
   }
 }
