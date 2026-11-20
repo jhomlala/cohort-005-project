@@ -13,6 +13,13 @@ Or run the first three with `npm run check`.
 
 Modules are deep modules: see [app/modules/README.md](./app/modules/README.md) before adding or importing one.
 
+## Before you commit
+
+- Keep every file under 5000 tokens (about 20 KB). The pre-commit hook rejects bigger files. Split at a seam before you commit: see "Keep files under 5000 tokens" in [CODING_STANDARDS.md](./CODING_STANDARDS.md).
+- Behaviour goes in a module under `app/modules/`, never inline in a loader or action.
+- An `oxlint-disable` comment needs a reason after `--`, and the hook rejects one without. Fix the code first. A disable is the last resort.
+- The reviewer fixes what it finds, including code you moved and tests you did not write. Write the missing test and fix moved code before you commit.
+
 ### About agent-browser
 
 agent-browser lets you drive a real browser through the app from the

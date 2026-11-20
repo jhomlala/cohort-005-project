@@ -7,9 +7,23 @@ Review it with the code-review skill, .agents/skills/code-review/SKILL.md:
 - spec: /tmp/review-spec.md
 - standards: CODING_STANDARDS.md
 
-Leave the human reviewer as little as possible. Fix every finding you can on
-`{{BRANCH}}`, and commit each fix through the pre-commit hook. The workflow
-pushes your commits. Leave `.github/` untouched.
+Fix on `{{BRANCH}}`, and commit each fix through the pre-commit hook. The
+workflow pushes your commits. Leave `.github/` untouched.
+
+Fix a finding by default. A human reviewer should see only what needs a
+decision the ticket does not answer. These are fixes, not findings:
+
+- Code that moved into this change from elsewhere is part of this change. A
+  finding in moved code is yours to fix now.
+- Logic that belongs in a module under app/modules/ goes there (see
+  app/modules/README.md). Moving it is a fix.
+- A finding with no test to extend means the test is missing. Write it
+  through the module's entry point, then fix.
+- A probable bug is a bug. Fix it and say what it was.
+
+Leave a finding unfixed only when the fix needs a decision you cannot make
+from the ticket, the spec or the standards. Name that decision in the verdict.
+Run `npm run check` after your last fix. It must pass.
 
 Every finding you leave unfixed becomes an inline comment on its file and
 line. You will be asked for them as structured output.
